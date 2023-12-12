@@ -13,7 +13,6 @@
 
 int main(void)
 {
-  int i;
   int s = -1;
   modbus_t *ctx;
   modbus_mapping_t *mb_mapping;
@@ -21,7 +20,7 @@ int main(void)
   ctx = modbus_new_tcp("127.0.0.1", 1502);
   //    modbus_set_debug(ctx, TRUE); 
   
-  mb_mapping = modbus_mapping_new(10, 10, 10, 10);  // Specify the size for each type of register or coil
+  mb_mapping = modbus_mapping_new(0, 0, 500, 500);  // Adjust the sizes as needed
   if (mb_mapping == NULL) {
     fprintf(stderr, "Failed to allocate the mapping: %s\n",
 	    modbus_strerror(errno));
@@ -29,13 +28,9 @@ int main(void)
     return -1;
   }
 
-  // Assign static values of "1" to all 10 input registers, holding registers, coils, and input coils
-  for (i = 0; i < 10; i++) {
-    mb_mapping->tab_input_registers[i] = i + 1;  // Set the address to i + 1 (1-based addressing)
-    mb_mapping->tab_registers[i] = i + 10001;   // Set the address to i + 10001 (1-based addressing)
-    mb_mapping->tab_input_bits[i] = i + 20001;  // Set the address to i + 20001 (1-based addressing)
-    mb_mapping->tab_bits[i] = i + 30001;        // Set the address to i + 30001 (1-based addressing)
-  }
+  // Assign static values to holding registers and coils at specific addresses
+  mb_mapping->tab_registers[170] = 1;  // Holding register at address 28171
+  mb_mapping->tab_bits[153] = 101;     // Coil at address 27154
   
   s = modbus_tcp_listen(ctx, 1);
   modbus_tcp_accept(ctx, &s);
@@ -45,11 +40,8 @@ int main(void)
     int rc;
     
     rc = modbus_receive(ctx, query);
-    printf("SLAVE: regs[] =\t");
-    for(i = 0; i < 10; i++) {
-      printf("%d ", mb_mapping->tab_registers[i]);
-    }
-    printf("\n");
+    printf("SLAVE: Holding Register at address 28171 = %d\n", mb_mapping->tab_registers[170]);
+    printf("SLAVE: Coil at address 27154 = %d\n", mb_mapping->tab_bits[153]);
     
     if (rc > 0) {
       /* rc is the query size */
