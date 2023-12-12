@@ -31,10 +31,10 @@ int main(void)
 
   // Assign static values of "1" to all 10 input registers, holding registers, coils, and input coils
   for (i = 0; i < 10; i++) {
-    mb_mapping->tab_input_registers[i] = 1;
-    mb_mapping->tab_registers[i] = 1;
-    mb_mapping->tab_input_bits[i] = 1;
-    mb_mapping->tab_bits[i] = 1;
+    mb_mapping->tab_input_registers[i] = i + 1;  // Set the address to i + 1 (1-based addressing)
+    mb_mapping->tab_registers[i] = i + 10001;   // Set the address to i + 10001 (1-based addressing)
+    mb_mapping->tab_input_bits[i] = i + 20001;  // Set the address to i + 20001 (1-based addressing)
+    mb_mapping->tab_bits[i] = i + 30001;        // Set the address to i + 30001 (1-based addressing)
   }
   
   s = modbus_tcp_listen(ctx, 1);
